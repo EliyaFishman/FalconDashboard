@@ -44,7 +44,7 @@ object VelocityChart : LineChart<Number, Number>(NumberAxis(), NumberAxis()) {
             while (t <= duration) {
                 val point = trajectory.sample(t)
                 t += dt
-                data(point.timeSeconds, abs(point.velocityMetersPerSecond) * 3.2808)
+                data(point.timeSeconds, abs(point.velocityMetersPerSecond))
             }
             this@VelocityChart.data.add(this)
         }
