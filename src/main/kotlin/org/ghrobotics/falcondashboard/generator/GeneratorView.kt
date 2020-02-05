@@ -21,9 +21,9 @@ import org.ghrobotics.falcondashboard.Saver
 import org.ghrobotics.falcondashboard.Saver.endVelocity
 import org.ghrobotics.falcondashboard.Saver.lastSaveLoadFile
 import org.ghrobotics.falcondashboard.Saver.lastSaveLoadFileProperty
+import org.ghrobotics.falcondashboard.Saver.lock
 import org.ghrobotics.falcondashboard.Saver.reversed
 import org.ghrobotics.falcondashboard.Saver.startVelocity
-import org.ghrobotics.falcondashboard.Settings
 import org.ghrobotics.falcondashboard.Settings.clampedCubic
 import org.ghrobotics.falcondashboard.Settings.lastSaveFileLocation
 import org.ghrobotics.falcondashboard.Settings.maxAcceleration
@@ -222,6 +222,8 @@ class GeneratorView : View() {
 
         @Synchronized
         private fun update() {
+            if (lock)
+                return
             if (startVelocity.value.isNaN() ||
                 endVelocity.value.isNaN() ||
                 maxVelocity.value epsilonEquals 0.0 ||
