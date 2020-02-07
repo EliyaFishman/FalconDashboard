@@ -10,7 +10,6 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Pos
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
-import javafx.stage.FileChooser
 import javafx.stage.StageStyle
 import javafx.util.StringConverter
 import kfoenix.jfxbutton
@@ -19,18 +18,17 @@ import kfoenix.jfxtabpane
 import org.ghrobotics.falcondashboard.FalconDashboard
 import org.ghrobotics.falcondashboard.Saver
 import org.ghrobotics.falcondashboard.Saver.endVelocity
-import org.ghrobotics.falcondashboard.Saver.lastSaveLoadFile
 import org.ghrobotics.falcondashboard.Saver.lastSaveLoadFileProperty
 import org.ghrobotics.falcondashboard.Saver.lock
 import org.ghrobotics.falcondashboard.Saver.reversed
 import org.ghrobotics.falcondashboard.Saver.startVelocity
 import org.ghrobotics.falcondashboard.Settings.clampedCubic
-import org.ghrobotics.falcondashboard.Settings.lastSaveFileLocation
 import org.ghrobotics.falcondashboard.Settings.maxAcceleration
 import org.ghrobotics.falcondashboard.Settings.maxCentripetalAcceleration
 import org.ghrobotics.falcondashboard.Settings.maxVelocity
 import org.ghrobotics.falcondashboard.Settings.trackWidth
 import org.ghrobotics.falcondashboard.createNumericalEntry
+import org.ghrobotics.falcondashboard.exportPath
 import org.ghrobotics.falcondashboard.generator.charts.PositionChart
 import org.ghrobotics.falcondashboard.generator.charts.VelocityChart
 import org.ghrobotics.falcondashboard.generator.fragments.WaypointFragment
@@ -44,10 +42,8 @@ import org.ghrobotics.lib.mathematics.units.feet
 import org.ghrobotics.lib.mathematics.units.meters
 import tornadofx.*
 import java.io.File
-import java.io.FileWriter
 
 class GeneratorView : View() {
-
     override val root = hbox {
         stylesheets += resources["/GeneratorStyle.css"]
         vbox {
@@ -80,9 +76,8 @@ class GeneratorView : View() {
                     }
                     spacing = 10.0
                 }
-                button {
+                button("save as") {
                     paddingAll = 5
-                    text = "save as"
                     action {
                         Saver.save()
                     }
@@ -146,27 +141,7 @@ class GeneratorView : View() {
                     prefWidth = 290.0
                     text = "Export JSON to file"
                     action {
-                        val file = chooseFile(
-                            "Save json", arrayOf(
-                                FileChooser.ExtensionFilter(
-                                    "json path file", "*.wpilib.json"
-                                )
-                            ),
-                            FileChooserMode.Save,
-                            op = {
-                                File(lastSaveFileLocation.value).parentFile.let {
-                                    if (it.isDirectory)
-                                        initialDirectory = it
-                                }
-                                lastSaveLoadFile?.let {
-                                    initialFileName = it.nameWithoutExtension
-                                }
-                            }
-                        ).firstOrNull() ?: return@action
-                        FileWriter(file).use {
-                            it.write(TrajectoryUtil.serializeTrajectory(trajectory.value))
-                        }
-                        lastSaveFileLocation.set(file.absolutePath)
+                        exportPath()
                     }
                 }
             }
@@ -208,7 +183,6 @@ class GeneratorView : View() {
         val trajectory = SimpleObjectProperty(TrajectoryGenerator.generateTrajectory(waypoints, config))
 
         init {
-            update()
             waypoints.onChange { update() }
             reversed.onChange { update() }
             clampedCubic.onChange { update() }

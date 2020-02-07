@@ -1,16 +1,19 @@
 package org.ghrobotics.falcondashboard
 
+import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil
 import javafx.application.Platform
 import javafx.beans.property.DoublePropertyBase
-import javafx.beans.property.Property
 import javafx.beans.property.ReadOnlyObjectPropertyBase
 import javafx.beans.property.ReadOnlyProperty
-import javafx.collections.ObservableList
 import javafx.geometry.Pos
 import javafx.scene.Parent
+import javafx.stage.FileChooser
 import javafx.util.converter.NumberStringConverter
 import kfoenix.jfxtextfield
+import org.ghrobotics.falcondashboard.generator.GeneratorView
 import tornadofx.*
+import java.io.File
+import java.io.FileWriter
 
 fun Parent.createNumericalEntry(name: String, property: DoublePropertyBase) = hbox {
     paddingAll = 5
@@ -39,3 +42,27 @@ fun <R, T> mapprop(receiver: ReadOnlyProperty<R>, getter: ReadOnlyProperty<R>.()
 
         override fun get() = getter.invoke(receiver)
     }
+
+fun exportPath() {
+    val file = chooseFile(
+        "Save json", arrayOf(
+            FileChooser.ExtensionFilter(
+                "json path file", "*.wpilib.json"
+            )
+        ),
+        FileChooserMode.Save,
+        op = {
+            File(Settings.lastSaveFileLocation.value).parentFile.let {
+                if (it.isDirectory)
+                    initialDirectory = it
+            }
+            Saver.lastSaveLoadFile?.let {
+                initialFileName = it.nameWithoutExtension
+            }
+        }
+    ).firstOrNull() ?: return
+    FileWriter(file).use {
+        it.write(TrajectoryUtil.serializeTrajectory(GeneratorView.trajectory.value))
+    }
+    Settings.lastSaveFileLocation.set(file.absolutePath)
+}
