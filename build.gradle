@@ -101,7 +101,7 @@ public class GitVersion {
 """
     }
 }
-compileTestJava.dependsOn generateSources
+compileKotlin.dependsOn generateSources
 
 sourceSets.main.java {
     srcDir "$buildDir/generated"
