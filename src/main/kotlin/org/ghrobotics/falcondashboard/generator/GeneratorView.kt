@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator
 import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil
 import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstraint
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Pos
 import javafx.scene.layout.Priority
@@ -44,6 +45,7 @@ import tornadofx.*
 import java.io.File
 
 class GeneratorView : View() {
+
     override val root = hbox {
         stylesheets += resources["/GeneratorStyle.css"]
         vbox {
@@ -64,6 +66,12 @@ class GeneratorView : View() {
                         override fun fromString(name: String?): File? = name?.let { File(name) }
                     })
                     alignment = Pos.BASELINE_CENTER
+                    trajectoryChanged.onChange {
+                        fill = if (it)
+                            Color.BLUE
+                        else
+                            Color.BLACK
+                    }
                 }
             }
             hbox {
@@ -72,14 +80,14 @@ class GeneratorView : View() {
                     paddingAll = 5
                     text = "save"
                     action {
-                        Saver.saveCurrentFile()
+                        trajectoryChanged.set(!Saver.saveCurrentFile())
                     }
                     spacing = 10.0
                 }
                 button("save as") {
                     paddingAll = 5
                     action {
-                        Saver.save()
+                        trajectoryChanged.set(!Saver.save())
                     }
                     spacing = 10.0
                 }
@@ -167,6 +175,7 @@ class GeneratorView : View() {
     }
 
     companion object {
+        val trajectoryChanged = SimpleBooleanProperty()
         val waypoints = observableListOf(
             Pose2d(1.5.feet, 23.feet, Rotation2d()),
             Pose2d(11.5.feet, 24.feet, Rotation2d())
@@ -232,6 +241,8 @@ class GeneratorView : View() {
             } else {
                 this.trajectory.set(TrajectoryGenerator.generateTrajectory(waypoints, config))
             }
+            Saver
+            trajectoryChanged.set(Saver.hasChanged())
         }
     }
 }

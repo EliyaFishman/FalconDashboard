@@ -52,8 +52,8 @@ object Saver {
 
     init {
         Settings.lastLoadFileLocation.value?.let {
-            loadFromFile(File(Settings.lastLoadFileLocation.value))
             lastSaveLoadFile = File(Settings.lastLoadFileLocation.value)
+            loadFromFile(lastSaveLoadFile!!)
         } ?: run {
             defaultValues = gson.toJson(Saver)
         }
@@ -82,16 +82,17 @@ object Saver {
         }
     }
 
-    fun save() {
+    fun save(): Boolean {
         val file = chooseFile(
             "save",
             arrayOf(FileChooser.ExtensionFilter("Falcon dashboard save file", "*.fds")),
             FileChooserMode.Save,
             op = { initialDirectory = File(Settings.lastLoadFileLocation.value).parentFile }
-        ).firstOrNull() ?: return
+        ).firstOrNull() ?: return false
         saveFile(file)
         lastSaveLoadFile = file
         Settings.lastLoadFileLocation.set(file.absolutePath)
+        return true
     }
 
     private fun saveFile(file: File) {
@@ -100,14 +101,14 @@ object Saver {
         }
     }
 
-    fun saveCurrentFile() {
+    fun saveCurrentFile(): Boolean {
         lastSaveLoadFile?.let {
             saveFile(it)
-        } ?: save()
+        } ?: return save()
+        return true
     }
 
     fun hasChanged(): Boolean {
-
         val file = lastSaveLoadFile
         return if (file != null) {
             if (file.exists()) file.readText() != gson.toJson(Saver) else {
