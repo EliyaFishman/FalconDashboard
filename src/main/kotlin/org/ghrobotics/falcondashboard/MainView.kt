@@ -46,6 +46,5 @@ class MainView : View("FRC 5190 Falcon Dashboard") {
     init {
         FX.primaryStage.fullScreenExitKeyCombination = KeyCombination.NO_MATCH
         FX.primaryStage.fullScreenExitHint = "Press F4 to exit"
-        reloadStylesheetsOnFocus()
     }
 }
