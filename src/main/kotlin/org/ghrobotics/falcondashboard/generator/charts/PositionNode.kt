@@ -6,9 +6,11 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.Cursor
 import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
+import javafx.scene.input.MouseButton
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
+import org.ghrobotics.falcondashboard.generator.GeneratorView
 import org.ghrobotics.falcondashboard.mapprop
 import org.ghrobotics.lib.mathematics.twodim.geometry.Translation2d
 import org.ghrobotics.lib.mathematics.units.meters
@@ -44,6 +46,14 @@ class PositionNode(
             var mouseXOffset = 0.0
             var mouseYOffset = 0.0
 
+            setOnMouseClicked {
+                if (it.button == MouseButton.SECONDARY) {
+                    GeneratorView.waypoints.let { waypoints ->
+                        if (waypoints.size > 2)
+                            waypoints.remove(simpleObjectProperty.value)
+                    }
+                }
+            }
             setOnMousePressed { event ->
                 if (!dragging) {
                     dragging = true
