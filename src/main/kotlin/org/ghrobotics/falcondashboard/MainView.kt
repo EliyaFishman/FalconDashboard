@@ -1,6 +1,7 @@
 package org.ghrobotics.falcondashboard
 
 import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil
+import git.GitVersion
 import javafx.scene.Parent
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyCombination
@@ -10,7 +11,7 @@ import org.ghrobotics.falcondashboard.generator.GeneratorView
 import org.ghrobotics.falcondashboard.livevisualizer.LiveVisualizerView
 import tornadofx.*
 
-class MainView : View("FRC 5190 Falcon Dashboard") {
+class MainView : View("FRC 5190 Falcon Dashboard version ${GitVersion.getVersion()}") {
     override val root: Parent = hbox {
         jfxtabpane {
             addEventHandler(KeyEvent.KEY_PRESSED) {
