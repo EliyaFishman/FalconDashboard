@@ -1,11 +1,11 @@
 package org.ghrobotics.falcondashboard.livevisualizer
 
-import edu.wpi.first.networktables.NetworkTableInstance
 import javafx.geometry.Pos
 import javafx.scene.input.KeyCode
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import javafx.stage.StageStyle
+import kfoenix.jfxbutton
 import kfoenix.jfxtextfield
 import org.ghrobotics.falcondashboard.Settings
 import org.ghrobotics.falcondashboard.livevisualizer.charts.FieldChart
@@ -31,6 +31,13 @@ class LiveVisualizerView : View() {
                             }
                         }.openModal(stageStyle = StageStyle.UTILITY)
                     }
+                }
+            }
+            jfxbutton("Change Alliance") {
+                spacing = 5.0
+                prefWidth = 200.0
+                action {
+                    FieldChart.flipImage()
                 }
             }
         }

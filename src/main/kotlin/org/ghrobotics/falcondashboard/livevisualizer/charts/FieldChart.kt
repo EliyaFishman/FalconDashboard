@@ -4,19 +4,19 @@ import edu.wpi.first.wpilibj.geometry.Pose2d
 import edu.wpi.first.wpilibj.geometry.Rotation2d
 import javafx.scene.chart.LineChart
 import javafx.scene.chart.NumberAxis
-import javafx.scene.chart.XYChart
 import javafx.scene.paint.Color
+import javafx.scene.transform.Rotate
 import org.ghrobotics.falcondashboard.Properties
 import org.ghrobotics.falcondashboard.Properties.kFieldHeight
 import org.ghrobotics.falcondashboard.Properties.kFieldWidth
 import org.ghrobotics.lib.mathematics.twodim.geometry.Transform2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.x_u
 import org.ghrobotics.lib.mathematics.twodim.geometry.y_u
-import org.ghrobotics.lib.mathematics.units.*
+import org.ghrobotics.lib.mathematics.units.inMeters
+import org.ghrobotics.lib.mathematics.units.inches
 import tornadofx.data
 import tornadofx.multi
 import tornadofx.style
-
 
 
 object FieldChart : LineChart<Number, Number>(
@@ -24,22 +24,26 @@ object FieldChart : LineChart<Number, Number>(
     NumberAxis(0.0, kFieldHeight, 0.5)
 ) {
 
-    private val robotSeries = XYChart.Series<Number, Number>()
-    private val pathSeries = XYChart.Series<Number, Number>()
-    private val robotBoundingBoxSeries = XYChart.Series<Number, Number>()
-    private val visionTargetSeries = XYChart.Series<Number, Number>()
+    private val robotSeries = Series<Number, Number>()
+    private val pathSeries = Series<Number, Number>()
+    private val robotBoundingBoxSeries = Series<Number, Number>()
+    private val visionTargetSeries = Series<Number, Number>()
 
     init {
         style {
             backgroundColor = multi(Color.LIGHTGRAY)
         }
-        lookup(".chart-plot-background").style +=
-            "-fx-background-image: url(\"chart-background.png\");" +
-                "-fx-background-size: stretch;" +
-                "-fx-background-position: top right;" +
-                "-fx-background-repeat: no-repeat;"
+        lookup(".chart-plot-background").let {
+            println(it.style)
+            it.style +=
+                "-fx-background-image: url(\"chart-background.png\");" +
+                        "-fx-background-size: stretch;" +
+                        "-fx-background-position: center;" +
+                        "-fx-background-repeat: no-repeat;"
+            println(it.style)
+        }
 
-        axisSortingPolicy = LineChart.SortingPolicy.NONE
+        axisSortingPolicy = SortingPolicy.NONE
         isLegendVisible = false
         animated = false
         createSymbols = false
@@ -91,7 +95,7 @@ object FieldChart : LineChart<Number, Number>(
     fun updateVisionTargets(newVisionTargets: List<Pose2d>) {
         visionTargetSeries.data.clear()
         newVisionTargets.forEach {
-            val data = XYChart.Data<Number, Number>(
+            val data = Data<Number, Number>(
                 it.translation.x_u.inMeters(),
                 it.translation.y_u.inMeters()
             )
@@ -130,6 +134,14 @@ object FieldChart : LineChart<Number, Number>(
     fun clear() {
         robotSeries.data.clear()
         pathSeries.data.clear()
+    }
+
+    fun flipImage() {
+        FieldChart.lookup(".chart-plot-background").apply {
+            rotationAxis = Rotate.Z_AXIS
+            rotate += 180
+        }
+
     }
 }
 
