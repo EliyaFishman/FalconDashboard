@@ -33,15 +33,11 @@ object FieldChart : LineChart<Number, Number>(
         style {
             backgroundColor = multi(Color.LIGHTGRAY)
         }
-        lookup(".chart-plot-background").let {
-            println(it.style)
-            it.style +=
-                "-fx-background-image: url(\"chart-background.png\");" +
-                        "-fx-background-size: stretch;" +
-                        "-fx-background-position: center;" +
-                        "-fx-background-repeat: no-repeat;"
-            println(it.style)
-        }
+        lookup(".chart-plot-background").style +=
+            "-fx-background-image: url(\"chart-background.png\");" +
+                    "-fx-background-size: stretch;" +
+                    "-fx-background-position: top right;" +
+                    "-fx-background-repeat: no-repeat;"
 
         axisSortingPolicy = SortingPolicy.NONE
         isLegendVisible = false
